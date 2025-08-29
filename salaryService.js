@@ -5,7 +5,5 @@ export const saveSalary = (formData) => {
   return { status: "success", message: " ✅Salary saved " };
 };
 
-export const getSalaries = () => {
-  return salaryData;
-};
+
 
