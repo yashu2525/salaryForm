@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { saveSalary} from "../services/salaryService";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { saveSalary } from "../services/salaryService";
 
 const SalaryForm = () => {
   const [employees, setEmployees] = useState([]);
@@ -8,8 +10,8 @@ const SalaryForm = () => {
     employee: "",
     basicSalary: "",
     hra: "",
-    paymentDate: "",
-    monthOfSalary: ""
+    paymentDate: null,
+    monthOfSalary: null,
   });
 
   useEffect(() => {
@@ -17,7 +19,7 @@ const SalaryForm = () => {
       const dummyEmployees = [
         { id: 1, name: "Yash Patel" },
         { id: 2, name: "Amit Sharma" },
-        { id: 3, name: "Neha Gupta" }
+        { id: 3, name: "Neha Gupta" },
       ];
       setEmployees(dummyEmployees);
     };
@@ -28,32 +30,48 @@ const SalaryForm = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const res = saveSalary(formData); 
+    const res = saveSalary({
+      ...formData,
+      paymentDate: formData.paymentDate
+        ? formData.paymentDate.toLocaleDateString()
+        : "",
+      monthOfSalary: formData.monthOfSalary
+        ? formData.monthOfSalary.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+          })
+        : "",
+    });
     alert(res.message);
 
     setFormData({
       employee: "",
       basicSalary: "",
       hra: "",
-      paymentDate: "",
-      monthOfSalary: ""
+      paymentDate: null,
+      monthOfSalary: null,
     });
   };
 
   return (
     <div className="container mt-5">
-      <div className="card shadow-lg p-4 rounded-4" style={{ maxWidth: "600px", margin: "auto" }}>
-        <h2 className="text-center text-primary mb-4">💰 Employee Salary Form</h2>
+      <div
+        className="card shadow-lg p-4 rounded-4"
+        style={{ maxWidth: "600px", margin: "auto" }}
+      >
+        <h2 className="text-center text-primary mb-4">
+          💰 Employee Salary Form
+        </h2>
         <form onSubmit={handleSubmit}>
 
           <div className="mb-3">
-            <label className="form-label fw-bold">Employee</label>
+            <label className="form-label fw-bold">Employee :</label>
             <select
               className="form-select"
               name="employee"
@@ -72,7 +90,7 @@ const SalaryForm = () => {
 
 
           <div className="mb-3">
-            <label className="form-label fw-bold">Basic Salary</label>
+            <label className="form-label fw-bold">Basic Salary :</label>
             <input
               type="textbox"
               className="form-control"
@@ -86,7 +104,7 @@ const SalaryForm = () => {
 
 
           <div className="mb-3">
-            <label className="form-label fw-bold">HRA</label>
+            <label className="form-label fw-bold">HRA :</label>
             <input
               type="textbox"
               className="form-control"
@@ -100,26 +118,31 @@ const SalaryForm = () => {
 
 
           <div className="mb-3">
-            <label className="form-label fw-bold">Payment Date</label>
-            <input
-              type="date"
+            <label className="form-label fw-bold">Payment Date : </label>
+            <DatePicker
+              selected={formData.paymentDate}
+              onChange={(date) =>
+                setFormData((prev) => ({ ...prev, paymentDate: date }))
+              }
+              dateFormat="dd/MM/yyyy"
               className="form-control"
-              name="paymentDate"
-              value={formData.paymentDate}
-              onChange={handleChange}
+              placeholderText="Select Payment Date"
               required
             />
           </div>
 
 
           <div className="mb-3">
-            <label className="form-label fw-bold">Month of Salary</label>
-            <input
-              type="month"
+            <label className="form-label fw-bold">Month of Salary :</label>
+            <DatePicker
+              selected={formData.monthOfSalary}
+              onChange={(date) =>
+                setFormData((prev) => ({ ...prev, monthOfSalary: date }))
+              }
+              dateFormat="MMMM yyyy"
+              showMonthYearPicker
               className="form-control"
-              name="monthOfSalary"
-              value={formData.monthOfSalary}
-              onChange={handleChange}
+              placeholderText="Select Month"
               required
             />
           </div>
